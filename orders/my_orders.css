@@ -1,0 +1,87 @@
+/* ─── My Orders ─── */
+
+.orders-wrap {
+  max-width: 1700px;
+  margin: clamp(var(--space-lg), 3vw, var(--space-2xl)) auto;
+}
+
+.orders-wrap .g-card {
+  padding: var(--space-xl);
+}
+
+.orders-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-2xl) 0;
+  font-size: 0.9rem;
+}
+
+.orders-page-title {
+  text-align: center;
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.orders-date-cell {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid rgba(213, 0, 0, 0.4);
+  color: var(--danger);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cancel-btn:hover {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+    box-shadow: 0 0 12px rgba(213, 0, 0, 0.25);
+  }
+}
+
+.cancel-btn:active {
+  transform: scale(0.95);
+}
+
+.g-table tbody tr {
+  transition: background-color var(--duration) var(--ease);
+}
+
+.g-table tbody tr:hover {
+  background: rgba(212, 175, 55, 0.02) !important;
+}
+
+@media (max-width: 700px) {
+  .orders-wrap { margin: var(--space-md); }
+  .orders-wrap .g-card { padding: var(--space-lg); }
+}
+
+/* ─── Light Mode Overrides ─── */
+body.light-mode .g-table tbody tr:hover {
+  background: var(--bg-card-hover) !important;
+}
+
+body.light-mode .cancel-btn {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+body.light-mode .cancel-btn:hover {
+  background: var(--red);
+  color: #ffffff;
+}
+  

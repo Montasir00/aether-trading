@@ -1,0 +1,478 @@
+.sentiment-page {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.sentiment-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at top left, var(--accent-glow-strong), transparent 35%),
+    linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.sentiment-eyebrow {
+  margin-bottom: var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sentiment-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.03em;
+}
+
+.sentiment-copy {
+  max-width: 70ch;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.98rem;
+}
+
+.sentiment-hero-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: flex-end;
+}
+
+.sentiment-user {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.sentiment-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: var(--space-xl);
+}
+
+@media (max-width: 980px) {
+  .sentiment-grid,
+  .sentiment-hero {
+    grid-template-columns: 1fr;
+    display: grid;
+    align-items: start;
+  }
+
+  .sentiment-hero-meta {
+    align-items: flex-start;
+  }
+}
+
+.sentiment-main,
+.sentiment-side {
+  padding: var(--space-xl);
+}
+
+.sentiment-meter-wrap {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+@media (max-width: 700px) {
+  .sentiment-meter-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Fear & Greed Liquid Ring Gauge Styles ─── */
+.gauge-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fear-greed-gauge .gauge-ring {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-strong);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm), inset 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.fear-greed-gauge .gauge-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--grad-accent);
+  transition: height 1s var(--ease);
+  box-shadow: 0 0 15px var(--accent-glow-strong);
+}
+
+.fear-greed-gauge .gauge-center {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.fear-greed-gauge .gauge-center small {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.sentiment-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: var(--space-md);
+  font-size: 0.72rem;
+  text-align: center;
+}
+.sentiment-scale span {
+  color: var(--text-secondary);
+  opacity: 0.65;
+  font-weight: 500;
+  transform: scale(0.95);
+  display: inline-block;
+  transition: opacity 150ms var(--ease), color 150ms var(--ease), transform 150ms var(--ease);
+}
+/* Highlight ONLY the active sentiment label check */
+.sentiment-scale span.active {
+  opacity: 1;
+  font-weight: 800;
+  transform: scale(1.06);
+}
+.sentiment-scale span.active.extreme-fear { color: oklch(0.62 0.15 25); text-shadow: 0 0 10px rgba(246, 70, 93, 0.25); }
+.sentiment-scale span.active.fear { color: oklch(0.68 0.12 45); text-shadow: 0 0 10px rgba(240, 185, 11, 0.2); }
+.sentiment-scale span.active.neutral { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow-strong); }
+.sentiment-scale span.active.greed { color: oklch(0.75 0.10 110); text-shadow: 0 0 10px rgba(0, 192, 135, 0.2); }
+.sentiment-scale span.active.extreme-greed { color: oklch(0.72 0.12 145); text-shadow: 0 0 10px rgba(0, 192, 135, 0.3); }
+
+/* Color-coded active sentiment badges matching OKLCH scale colors */
+.g-badge.badge-extreme-fear { background: oklch(62% 0.15 25 / 0.12); color: oklch(62% 0.15 25); border: 1px solid oklch(62% 0.15 25 / 0.2); }
+.g-badge.badge-fear { background: oklch(68% 0.12 45 / 0.12); color: oklch(68% 0.12 45); border: 1px solid oklch(68% 0.12 45 / 0.2); }
+.g-badge.badge-neutral { background: oklch(76% 0.15 80 / 0.1); color: var(--accent); border: 1px solid oklch(76% 0.15 80 / 0.25); }
+.g-badge.badge-greed { background: oklch(75% 0.10 110 / 0.1); color: oklch(75% 0.10 110); border: 1px solid oklch(75% 0.10 110 / 0.15); }
+.g-badge.badge-extreme-greed { background: oklch(72% 0.12 145 / 0.16); color: oklch(72% 0.12 145); border: 1px solid oklch(72% 0.12 145 / 0.25); }
+
+/* Warm premium upgrade for neutral sentiment badge in feed */
+.sentiment-page .sentiment-badge.sent-neu {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: var(--accent) !important;
+  border: 1px solid rgba(212, 175, 55, 0.2) !important;
+}
+
+/* Custom Feed Height on Sentiment Page */
+.sentiment-page .news-list {
+  max-height: 550px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-right: 4px;
+}
+
+.sentiment-page .news-item {
+  padding: 12px var(--space-md) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border) !important;
+  transition: border-color 150ms var(--ease), background-color 150ms var(--ease) !important, transform 150ms var(--ease);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sentiment-page .news-item:hover {
+    border-color: var(--border-strong) !important;
+    background: var(--bg-card-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.sentiment-page .news-item div:first-child {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  transition: color var(--duration) var(--ease);
+}
+
+.sentiment-page .news-item:hover div:first-child {
+  color: var(--accent-hover);
+}
+
+/* Premium circular gauge typography override */
+#fear-greed-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-shadow: 0 0 15px var(--accent-glow-strong);
+}
+
+/* Premium component widgets with horizontal progress bars */
+.fear-greed-components {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.fear-greed-component {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 150ms var(--ease), background-color 150ms var(--ease), transform 150ms var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+.fear-greed-component .component-detail {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fear-greed-component:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong) !important;
+    background: var(--bg-card-hover) !important;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.fear-greed-component .component-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.fear-greed-component .component-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem !important;
+  font-weight: 800;
+  color: var(--accent) !important;
+}
+
+.fear-greed-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: var(--space-xs) 0;
+}
+
+.fear-greed-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Shifting explainers */
+.sentiment-explainer {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.sentiment-explainer article {
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-left: 3.5px solid var(--accent);
+  border-radius: var(--radius-md);
+  transition: border-color 150ms var(--ease), background-color 150ms var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sentiment-explainer article:hover {
+    transform: translateX(4px);
+    background: var(--bg-card-hover);
+    border-color: rgba(212, 175, 55, 0.22);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.sentiment-explainer h3 {
+  margin-bottom: var(--space-xs);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.sentiment-explainer p {
+  color: var(--text-secondary);
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+/* ─── Light Mode Overrides for Sentiment Page ─── */
+body.light-mode .sentiment-hero {
+  background: radial-gradient(circle at top left, var(--accent-glow-strong), transparent 35%),
+              #ffffff !important;
+  border-color: var(--border-strong) !important;
+}
+
+body.light-mode #fear-greed-value {
+  text-shadow: none;
+}
+
+body.light-mode .fear-greed-gauge .gauge-ring {
+  background: var(--bg-primary) !important;
+  box-shadow: var(--shadow-sm), inset 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+body.light-mode .fear-greed-gauge .gauge-center {
+  background: #ffffff !important;
+}
+
+body.light-mode .sentiment-scale span.active {
+  text-shadow: none !important;
+}
+
+body.light-mode .sentiment-page .news-item {
+  background: var(--bg-primary) !important;
+  border-color: var(--border) !important;
+}
+
+body.light-mode .sentiment-page .news-item:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.light-mode .fear-greed-component {
+  background: var(--bg-primary) !important;
+  border-color: var(--border) !important;
+}
+
+body.light-mode .fear-greed-component:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.light-mode .sentiment-explainer article {
+  background: var(--bg-primary) !important;
+  border-color: var(--border) !important;
+  border-left: 3.5px solid var(--accent) !important;
+}
+
+body.light-mode .sentiment-explainer article:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.light-mode .fear-greed-bar {
+  background: var(--bg-card-hover) !important;
+}
+
+body.light-mode .fear-greed-bar span {
+  box-shadow: none;
+}
+
+/* Light mode overrides for upgraded neutral sentiment components */
+body.light-mode .sentiment-scale span.active.neutral {
+  color: var(--accent) !important;
+  text-shadow: none !important;
+}
+body.light-mode .g-badge.badge-neutral {
+  background: var(--accent-glow) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent-glow-strong) !important;
+}
+body.light-mode .sentiment-page .sentiment-badge.sent-neu {
+  background: var(--accent-glow) !important;
+  color: var(--accent) !important;
+  border: 1px solid var(--accent-glow-strong) !important;
+}
+
+/* ─── News Sentiment Badges ─── */
+.sentiment-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: var(--radius-sm);
+  line-height: 1.2;
+}
+
+.sentiment-badge.sent-pos {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid oklch(72% 0.24 142 / 0.2);
+}
+
+.sentiment-badge.sent-neg {
+  background: var(--red-bg);
+  color: var(--red);
+  border: 1px solid oklch(50% 0.27 28 / 0.2);
+}
+
+.sentiment-badge.sent-neu {
+  background: oklch(76% 0.15 80 / 0.1);
+  color: var(--accent);
+  border: 1px solid oklch(76% 0.15 80 / 0.2);
+}
+
+body.light-mode .sentiment-badge.sent-pos {
+  background: var(--green-bg) !important;
+  color: var(--green) !important;
+  border-color: oklch(42% 0.08 145 / 0.25) !important;
+}
+
+body.light-mode .sentiment-badge.sent-neg {
+  background: var(--red-bg) !important;
+  color: var(--red) !important;
+  border-color: oklch(38% 0.15 25 / 0.25) !important;
+}
+
+body.light-mode .sentiment-badge.sent-neu {
+  background: var(--accent-glow) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent-glow-strong) !important;
+}

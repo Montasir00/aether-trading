@@ -1,0 +1,9 @@
+.git
+.gitignore
+node_modules
+vendor
+blockchain-transactions/node_modules
+blockchain-transactions/build
+mqtt/__pycache__
+*.log
+*.tmp

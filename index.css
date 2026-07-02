@@ -1,165 +1,455 @@
 /* =============================================================
-   INDEX / LOGIN-REGISTER PAGE STYLES
+   INDEX / LOGIN PAGE — Binance-style Split Layout
    ============================================================= */
 
 body {
+  display: block;
+  min-height: 100dvh;
+  padding: 0;
   background: var(--bg-primary);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: var(--space-lg);
 }
 
-/* ─── Auth Container ─── */
-.auth-wrapper {
-  width: 100%;
-  max-width: 440px;
-  animation: fadeInUp 0.6s var(--ease) both;
+/* ─── Full-viewport two-column split ─── */
+.login-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
 }
 
-.auth-header {
-  text-align: center;
-  margin-bottom: var(--space-xl);
-}
-
-.auth-logo {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--accent), #d4a00a);
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  margin-bottom: var(--space-md);
-  box-shadow: 0 4px 20px rgba(240, 185, 11, 0.3);
-}
-
-.auth-header h1 {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
-}
-
-.auth-header p {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-top: var(--space-xs);
-}
-
-/* ─── Auth Card ─── */
-.auth-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  box-shadow: var(--shadow-lg);
+/* ══════════════════════════════════════════
+   LEFT PANEL — Live Prices
+══════════════════════════════════════════ */
+.login-prices-panel {
+  background: linear-gradient(160deg, #09201a 0%, #050c09 55%, #0d1a15 100%);
+  border-right: 1px solid rgba(212, 175, 55, 0.1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
 }
 
-.auth-card::before {
+/* Ambient glow blobs */
+.login-prices-panel::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), #d4a00a, var(--accent));
+  top: -20%;
+  left: -15%;
+  width: 65%;
+  height: 65%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  animation: floatBlob 18s ease infinite alternate;
+}
+.login-prices-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -15%;
+  right: -10%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(circle, rgba(0, 200, 83, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  animation: floatBlob 24s ease infinite alternate-reverse;
+}
+@keyframes floatBlob {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(3%, 4%) scale(1.06); }
 }
 
-
-
-/* ─── Form ─── */
-.auth-form {
+.prices-panel-inner {
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  position: relative;
+  z-index: 1;
 }
 
-.auth-form .field {
+/* Brand mark */
+.prices-panel-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--accent);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.prices-brand-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #050c09;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+}
+.prices-brand-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* Live status pill */
+.prices-panel-head {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(0, 200, 83, 0.08);
+  border: 1px solid rgba(0, 200, 83, 0.2);
+  border-radius: 999px;
+  padding: 4px 14px;
+  width: fit-content;
+}
+.prices-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 7px var(--green);
+  animation: pulseDot 2s ease infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.8); }
+}
+.prices-status-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--green);
+}
+
+/* Headline */
+.prices-panel-heading {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
+.prices-panel-title {
+  font-size: clamp(1.7rem, 2.5vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+}
+.prices-panel-sub {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
 
+/* ─── Ticker Cards ─── */
+.ticker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(212, 175, 55, 0.07);
+  border-radius: var(--radius-lg);
+  padding: 14px var(--space-lg);
+  transition: background-color 200ms var(--ease),
+              border-color 200ms var(--ease),
+              transform 200ms var(--ease);
+  cursor: default;
+}
+.ticker-item:hover {
+  background: rgba(212, 175, 55, 0.05);
+  border-color: rgba(212, 175, 55, 0.22);
+  transform: translateX(5px);
+}
+
+.ticker-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.ticker-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+.ticker-icon-btc { background: rgba(247, 147, 26, 0.13); color: #f7931a; border: 1px solid rgba(247, 147, 26, 0.22); }
+.ticker-icon-eth { background: rgba(98, 126, 234, 0.13); color: #627eea;  border: 1px solid rgba(98, 126, 234, 0.22); }
+.ticker-icon-xau { background: rgba(212, 175, 55, 0.13); color: var(--accent); border: 1px solid rgba(212, 175, 55, 0.28); font-size: 0.78rem; letter-spacing: -0.5px; }
+.ticker-icon-xag { background: rgba(192, 192, 192, 0.1);  color: #c0c0c0; border: 1px solid rgba(192, 192, 192, 0.2);  font-size: 0.78rem; letter-spacing: -0.5px; }
+
+.ticker-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ticker-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.ticker-symbol {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+.ticker-right {
+  text-align: right;
+  min-width: 90px;
+}
+.ticker-price {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.ticker-change {
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 3px;
+  font-family: var(--font-mono);
+}
+.change-up      { color: var(--green); }
+.change-down    { color: var(--red);   }
+.change-neutral { color: var(--text-muted); }
+
+/* Skeleton shimmer for price loading */
+.tick-skeleton {
+  display: inline-block;
+  width: 80px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Panel footer */
+.prices-panel-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(212, 175, 55, 0.07);
+  padding-top: var(--space-md);
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+/* ══════════════════════════════════════════
+   RIGHT PANEL — Login / Register Form
+══════════════════════════════════════════ */
+.login-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+.login-form-inner {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeInUp 0.55s var(--ease) both;
+}
+
+/* ─── Auth Header ─── */
+.auth-header {
+  text-align: center;
+}
+.auth-logo {
+  width: 48px;
+  height: 48px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: var(--space-xs);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.auth-logo:hover { border-color: var(--accent); transform: scale(1.05); }
+.auth-header h1 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin-top: var(--space-xs);
+  margin-bottom: 2px;
+}
+.auth-header p {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+
+/* ─── Auth Form ─── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .auth-form .field label {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 .auth-form .field input {
-  padding: 12px 16px;
-  font-size: 0.9rem;
+  padding: 10px 14px;
+  font-size: 0.85rem;
   color: var(--text-primary);
   background: var(--bg-secondary);
   border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
   outline: none;
-  transition: border-color var(--duration) var(--ease),
-              box-shadow var(--duration) var(--ease);
+  transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
   font-family: var(--font);
 }
 .auth-form .field input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
-.auth-form .field input::placeholder {
-  color: var(--text-muted);
-}
-
-.auth-form .g-btn-primary {
+.auth-form .field input::placeholder { color: var(--text-muted); }
+.auth-form .g-btn-pill-primary {
   width: 100%;
-  padding: 13px;
-  font-size: 0.95rem;
-  margin-top: var(--space-sm);
+  padding: 11px;
+  font-size: 0.9rem;
+  margin-top: 8px;
 }
 
-/* ─── Footer Link ─── */
+/* ─── Auth Footer Link ─── */
 .auth-footer {
   text-align: center;
-  margin-top: var(--space-md);
-  font-size: 0.85rem;
+  margin-top: 12px;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
-.auth-footer a {
-  color: var(--accent);
-  font-weight: 600;
-}
-.auth-footer a:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
-}
+.auth-footer a { color: var(--accent); font-weight: 600; }
+.auth-footer a:hover { color: var(--accent-hover); text-decoration: underline; }
 
 /* ─── Features Strip ─── */
 .auth-features {
   display: flex;
   justify-content: center;
-  gap: var(--space-xl);
-  margin-top: var(--space-2xl);
+  gap: 20px;
   flex-wrap: wrap;
 }
 .auth-feature {
   text-align: center;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
 }
 .auth-feature .feat-icon {
-  font-size: 1.5rem;
-  margin-bottom: var(--space-xs);
-  display: block;
+  color: var(--accent);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform var(--duration) var(--ease);
 }
+.auth-feature:hover .feat-icon { transform: translateY(-4px); }
 
-/* ─── Hide logic helper ─── */
+/* ─── Utility ─── */
 .hidden { display: none !important; }
 
-/* ─── Responsive ─── */
-@media (max-width: 480px) {
-  .auth-card { padding: var(--space-lg); }
-  .auth-features { gap: var(--space-md); }
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .login-split {
+    grid-template-columns: 1fr;
+  }
+  .login-prices-panel {
+    border-right: none;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    padding: var(--space-xl) var(--space-lg);
+  }
+  .prices-panel-title { font-size: 1.55rem; }
+  .login-form-panel {
+    padding: var(--space-xl) var(--space-lg);
+  }
+}
+
+@media (max-width: 600px) {
+  .login-prices-panel { padding: var(--space-lg) var(--space-md); }
+  .prices-panel-title { font-size: 1.3rem; }
+  .ticker-item { padding: 11px var(--space-md); }
+  .ticker-icon  { width: 34px; height: 34px; font-size: 0.85rem; }
+  .login-form-panel { padding: var(--space-lg) var(--space-md); }
+}
+
+/* ══════════════════════════════════════════
+   LIGHT MODE
+══════════════════════════════════════════ */
+body.light-mode .login-prices-panel {
+  background: linear-gradient(160deg, #f2efe8 0%, #f7f6f3 55%, #ece8df 100%);
+  border-right-color: rgba(149, 100, 0, 0.12);
+}
+body.light-mode .login-prices-panel::before {
+  background: radial-gradient(circle, rgba(149, 100, 0, 0.06) 0%, transparent 70%);
+}
+body.light-mode .login-prices-panel::after {
+  background: radial-gradient(circle, rgba(52, 101, 56, 0.04) 0%, transparent 70%);
+}
+body.light-mode .ticker-item {
+  background: rgba(255,255,255,0.6);
+  border-color: rgba(149, 100, 0, 0.09);
+}
+body.light-mode .ticker-item:hover {
+  background: rgba(149, 100, 0, 0.05);
+  border-color: rgba(149, 100, 0, 0.2);
+}
+body.light-mode .prices-panel-footer {
+  border-top-color: rgba(149, 100, 0, 0.1);
+}
+body.light-mode .prices-panel-head {
+  background: rgba(52, 101, 56, 0.07);
+  border-color: rgba(52, 101, 56, 0.2);
+}
+body.light-mode .login-form-panel {
+  background: var(--bg-primary);
+}
+body.light-mode .tick-skeleton {
+  background: linear-gradient(90deg, #e8e4db 25%, #f5f2ec 50%, #e8e4db 75%);
+  background-size: 200% 100%;
 }

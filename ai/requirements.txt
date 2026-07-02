@@ -1,0 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+timesfm
+fastapi
+uvicorn
+requests
+huggingface_hub

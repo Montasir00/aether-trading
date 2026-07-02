@@ -1,0 +1,121 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aether_web
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-app_user}
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      DB_NAME: ${DB_NAME:-aether_trading}
+      REDIS_HOST: redis
+      EXCHANGE_OWNER_PRIVATE_KEY: ${EXCHANGE_OWNER_PRIVATE_KEY}
+    volumes:
+
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: aether_db
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme_root}
+      MYSQL_DATABASE: ${DB_NAME:-aether_trading}
+      MYSQL_USER: ${DB_USER:-app_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-changeme_root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: aether_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme_root}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aether_scheduler
+    restart: unless-stopped
+    command: php cron_worker.php
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/var/www/html
+      - ./logs:/var/www/html/logs
+
+  ai_service:
+    image: python:3.10-slim
+    container_name: aether_ai
+    restart: unless-stopped
+    volumes:
+      - ./ai:/app
+      - hf_cache:/root/.cache/huggingface # Persistent cache volume to prevent redownloading 800MB weights!
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    ports:
+      - "5000:5000"
+
+  redis:
+    image: redis:alpine
+    container_name: aether_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  matching_daemon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aether_matching_daemon
+    restart: unless-stopped
+    command: php matching_engine/matching_daemon.php
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+      EXCHANGE_OWNER_PRIVATE_KEY: ${EXCHANGE_OWNER_PRIVATE_KEY}
+    volumes:
+
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  db_data:
+  hf_cache:

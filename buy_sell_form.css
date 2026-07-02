@@ -1,0 +1,448 @@
+/* =============================================================
+   TRADE PAGE STYLES — Two-column split: TA left, Order right
+   Requires global.css + dashboard.css
+   ============================================================= */
+
+/* ─── Trade Split Layout ─── */
+.trade-split-layout {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* ─── Left: Technical Analysis Panel ─── */
+.trade-ta-panel {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.trade-ta-panel .g-double-bezel {
+  height: 100%;
+}
+
+/* ─── Right: Order Form Panel ─── */
+.trade-order-panel {
+  flex: 0 0 360px;
+  width: 360px;
+  position: sticky;
+  top: calc(64px + var(--space-xl)); /* navbar height + page padding */
+}
+
+/* ─── Form Elements ─── */
+.trade-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ─── Buy / Sell Toggle Pill Slider ─── */
+.type-toggle {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+  position: relative;
+  margin-bottom: var(--space-sm);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+.type-toggle input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.type-toggle label {
+  flex: 1;
+  text-align: center;
+  padding: 11px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 150ms var(--ease), background-color 150ms var(--ease);
+  user-select: none;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+@media (hover: hover) and (pointer: fine) {
+  .type-toggle label:hover { color: var(--text-primary); }
+}
+#type-buy:checked ~ .toggle-label-buy {
+  background: var(--accent);
+  color: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  box-shadow: none;
+}
+#type-sell:checked ~ .toggle-label-sell {
+  background: var(--red);
+  color: var(--bg-secondary);
+  border: 1px solid var(--red);
+  box-shadow: none;
+}
+
+/* ─── Form Groups ─── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.form-group label,
+.form-group .form-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Total Display ─── */
+.total-display {
+  background: var(--bg-card-hover);
+  border: 1.5px solid var(--border-strong);
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: right;
+  letter-spacing: -0.02em;
+  box-shadow: none;
+  text-shadow: none;
+  transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+.total-display.active {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+/* ─── Wallet Balances ─── */
+.wallets-panel {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+.wallets-panel h3 {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+.wallets-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+.mini-wallet-card {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-md);
+  transition: border-color 150ms var(--ease), background-color 150ms var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mini-wallet-card:hover { border-color: var(--border-strong); }
+}
+.mini-wallet-card .wallet-details {
+  flex: 1;
+}
+.mini-wallet-card strong {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+.mini-wallet-card .coin-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mini-wallet-card .coin-avatar svg {
+  width: 22px;
+  height: 22px;
+}
+.wallet-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 8px;
+}
+.wallet-lbl {
+  color: var(--text-muted);
+  font-size: 0.63rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.wallet-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+}
+
+/* ─── Selected Asset Select Input Icon Wrapper ─── */
+.select-with-icon-wrapper {
+  position: relative;
+}
+.selected-asset-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.selected-asset-icon-preview .coin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.selected-asset-icon-preview .coin-avatar svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ─── Icon circle on submit button ─── */
+.g-btn-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+
+/* ─── Technical Analysis Panel Polish ─── */
+.trade-ta-panel .g-double-bezel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.trade-ta-panel .dash-card-header {
+  margin-bottom: 0;
+}
+
+.trade-ta-panel .dash-card-subtitle {
+  margin-bottom: 0;
+  max-width: 70ch;
+  color: var(--text-secondary);
+}
+
+.technical-selector-wrap {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  box-shadow: var(--shadow-sm);
+}
+
+.technical-selector-head {
+  margin-bottom: 0;
+}
+
+.technical-selector-label {
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.technical-selector-hint {
+  color: var(--text-muted);
+}
+
+.technical-symbol-select-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.technical-symbol-select-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.technical-symbol-select,
+#chart-interval,
+.forecast-setting-item select,
+.forecast-setting-item input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease), background-color 150ms var(--ease);
+}
+
+.technical-symbol-select,
+#chart-interval,
+.forecast-setting-item select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 1px), calc(100% - 12px) calc(50% - 1px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 42px;
+}
+
+.technical-symbol-select:hover,
+#chart-interval:hover,
+.forecast-setting-item select:hover {
+  border-color: var(--accent);
+}
+
+.technical-symbol-select:focus,
+#chart-interval:focus,
+.forecast-setting-item select:focus,
+.forecast-setting-item input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.technical-symbol-summary {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card-hover);
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.chart-controls {
+  padding: var(--space-sm) 0 0;
+}
+
+.chart-controls .control-group {
+  gap: var(--space-xs);
+}
+
+.chart-controls label {
+  white-space: nowrap;
+}
+
+.chart-controls .btn-group-toggle {
+  gap: 8px;
+}
+
+.chart-controls .g-divider-v {
+  opacity: 0.6;
+}
+
+.chart-controls .g-btn-pill-toggle,
+.chart-controls .g-btn-pill-toggle-ai {
+  min-height: 34px;
+  padding-inline: 14px;
+}
+
+body.light-mode .technical-selector-wrap {
+  background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.68));
+  border-color: var(--border);
+  box-shadow: 0 10px 24px rgba(17,17,17,0.05);
+}
+
+body.light-mode .technical-symbol-summary {
+  background: rgba(255,255,255,0.78);
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .trade-order-panel {
+    flex: 0 0 320px;
+    width: 320px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .trade-split-layout {
+    flex-direction: column;
+  }
+  .trade-order-panel {
+    flex: none;
+    width: 100%;
+    position: static;
+  }
+  .wallets-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 540px) {
+  .trade-split-layout { gap: var(--space-md); }
+  .wallets-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ══════════════════════════════════════════
+   LIGHT MODE
+══════════════════════════════════════════ */
+body.light-mode .total-display {
+  background: var(--bg-primary);
+  color: var(--text-primary) !important;
+  border-color: var(--border-strong);
+  text-shadow: none;
+}
+body.light-mode .total-display.active {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+body.light-mode .mini-wallet-card {
+  background: #fff;
+  border-color: var(--border);
+}
+body.light-mode .mini-wallet-card:hover {
+  border-color: var(--accent);
+}
+
+/* ─── Trade Page Bottom Layout (Transactions + Wallets) ─── */
+.trade-bottom-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (min-width: 1100px) {
+  .trade-bottom-layout {
+    grid-template-columns: 1.3fr 0.7fr;
+  }
+}

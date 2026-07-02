@@ -3,7 +3,9 @@
     "license": "MIT",
     "require": {
         "phpmailer/phpmailer": "^6.10",
+        "guzzlehttp/guzzle": "^7.0",
         "web3p/ethereum-tx": "^0.4.3",
-        "web3p/web3.php": "^0.3.2"
+        "web3p/web3.php": "^0.3.2",
+        "predis/predis": "^2.2"
     }
 }

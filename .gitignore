@@ -1,0 +1,30 @@
+# -- Secrets & Environment ------------------------------------------------------
+.env
+*.env.local
+
+# -- Dependencies --------------------------------------------------------------
+vendor/
+node_modules/
+blockchain/node_modules/
+
+# -- Build / Compiled Artifacts ------------------------------------------------
+blockchain/build/
+blockchain/artifacts/
+blockchain/cache/
+
+# -- Caches & Temporary Files --------------------------------------------------
+tmp/
+tmp_news.json
+api/api_cache.json
+*.log
+logs/
+
+# -- OS / IDE ------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+
+# -- Word / Office Lock Files --------------------------------------------------
+~$*.docx
+~$*.xlsx
+~$*.pptx

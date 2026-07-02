@@ -1,0 +1,261 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title AetherTrade
+ * @dev Smart contract for the Aether Trading Platform.
+ *
+ *  MARKET ORDERS (existing behaviour):
+ *      buyAsset()    — user sends ETH, exchange credits commodity in MySQL.
+ *      releaseFunds() — exchange sends ETH back to seller on SELL.
+ *
+ *  LIMIT ORDERS (new — Hybrid DEX):
+ *      escrowETH()         — buyer locks ETH inside contract at order placement.
+ *      settleLimitOrder()  — exchange settles a matched pair, transfers escrowed ETH to seller.
+ *      cancelLimitOrder()  — user or exchange cancels an open limit order and refunds escrowed ETH.
+ */
+contract AetherTrade {
+
+    // ─── State ────────────────────────────────────────────────────────────────
+    address public owner;       // Contract deployer
+    address public exchange;    // Exchange wallet that collects market-buy ETH
+
+    // Tracks escrowed ETH per limit order ID (orderId => Wei amount)
+    mapping(uint256 => uint256) public escrowedETH;
+    // Tracks who owns each escrow (orderId => buyer address) for refund security
+    mapping(uint256 => address) public escrowOwner;
+    // Prevents double-settlement of the same order ID
+    mapping(uint256 => bool) public settledOrders;
+
+    // ─── Events ───────────────────────────────────────────────────────────────
+
+    // Market Buy
+    event TradeSettled(
+        uint256 indexed tradeId,
+        address indexed buyer,
+        string  asset,
+        uint256 ethPaid,
+        uint256 assetQty,
+        uint256 timestamp
+    );
+
+    // Market Sell
+    event FundsReleased(
+        uint256 indexed tradeId,
+        address indexed seller,
+        string  asset,
+        uint256 ethReceived,
+        uint256 timestamp
+    );
+
+    // Limit Order — ETH escrowed by buyer on order placement
+    event ETHEscrowed(
+        uint256 indexed orderId,
+        address indexed buyer,
+        uint256 ethAmount,
+        uint256 timestamp
+    );
+
+    // Limit Order — matched pair settled on-chain
+    event LimitOrderSettled(
+        uint256 indexed buyOrderId,
+        uint256 indexed sellOrderId,
+        address indexed buyer,
+        address seller,
+        string  asset,
+        uint256 ethAmount,
+        uint256 timestamp
+    );
+
+    // Limit Order — cancelled and ETH refunded
+    event LimitOrderCancelled(
+        uint256 indexed orderId,
+        address indexed user,
+        uint256 ethRefunded,
+        uint256 timestamp
+    );
+
+    // ─── Modifiers ────────────────────────────────────────────────────────────
+    modifier onlyOwner() {
+        require(msg.sender == owner, "AetherTrade: caller is not the owner");
+        _;
+    }
+
+    // ─── Constructor ──────────────────────────────────────────────────────────
+    constructor(address _exchange) {
+        owner    = msg.sender;
+        exchange = _exchange;
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  MARKET ORDERS (unchanged from original)
+    // ════════════════════════════════════════════════════════════════════════
+
+    /**
+     * @dev Market BUY — user sends ETH, ETH forwarded to exchange wallet.
+     *      PHP backend listens for TradeSettled event and credits commodity.
+     */
+    function buyAsset(
+        uint256 _tradeId,
+        string  memory _asset,
+        uint256 _assetQty
+    ) external payable {
+        require(msg.value > 0, "AetherTrade: Must send ETH to buy");
+
+        (bool sent, ) = payable(exchange).call{value: msg.value}("");
+        require(sent, "AetherTrade: ETH transfer to exchange failed");
+
+        emit TradeSettled(
+            _tradeId,
+            msg.sender,
+            _asset,
+            msg.value,
+            _assetQty,
+            block.timestamp
+        );
+    }
+
+    /**
+     * @dev Market SELL — exchange releases ETH back to the seller.
+     *      Called by the exchange (owner) via Web3.php.
+     */
+    function releaseFunds(
+        uint256 _tradeId,
+        address payable _seller,
+        string  memory _asset
+    ) external payable onlyOwner {
+        require(msg.value > 0, "AetherTrade: Must send ETH to release");
+        require(_seller != address(0), "AetherTrade: Invalid seller address");
+
+        (bool sent, ) = _seller.call{value: msg.value}("");
+        require(sent, "AetherTrade: ETH transfer to seller failed");
+
+        emit FundsReleased(
+            _tradeId,
+            _seller,
+            _asset,
+            msg.value,
+            block.timestamp
+        );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  LIMIT ORDERS — Hybrid DEX (new)
+    // ════════════════════════════════════════════════════════════════════════
+
+    /**
+     * @dev STEP 1 of Limit BUY: Buyer locks ETH inside the contract at order placement.
+     *      Called once by the buyer when creating a limit buy order.
+     *      No ETH is moved to any wallet yet — it stays inside this contract.
+     *
+     * @param _orderId   The limit order ID generated by the PHP backend (matches MySQL orders.id)
+     */
+    function escrowETH(uint256 _orderId) external payable {
+        require(msg.value > 0, "AetherTrade: Must send ETH to escrow");
+        require(escrowedETH[_orderId] == 0, "AetherTrade: Order already escrowed");
+        require(!settledOrders[_orderId], "AetherTrade: Order already settled");
+
+        escrowedETH[_orderId]  = msg.value;
+        escrowOwner[_orderId]  = msg.sender;
+
+        emit ETHEscrowed(_orderId, msg.sender, msg.value, block.timestamp);
+    }
+
+    /**
+     * @dev STEP 2 of Limit Order Lifecycle: Exchange settles a matched BUY/SELL pair.
+     *      Called by the exchange backend (onlyOwner) when the off-chain matching engine
+     *      finds a compatible buy and sell order.
+     *
+     *      The escrowed ETH from the buy order is transferred directly to the seller's wallet.
+     *
+     * @param _buyOrderId   MySQL orders.id of the matched BUY limit order
+     * @param _sellOrderId  MySQL orders.id of the matched SELL limit order
+     * @param _seller       MetaMask address of the seller receiving ETH
+     * @param _asset        Commodity ticker e.g. "XAU"
+     */
+    function settleLimitOrder(
+        uint256 _buyOrderId,
+        uint256 _sellOrderId,
+        address payable _seller,
+        string memory _asset
+    ) external onlyOwner {
+        require(!settledOrders[_buyOrderId],  "AetherTrade: Buy order already settled");
+        require(!settledOrders[_sellOrderId], "AetherTrade: Sell order already settled");
+        require(escrowedETH[_buyOrderId] > 0, "AetherTrade: No ETH escrowed for buy order");
+        require(_seller != address(0),        "AetherTrade: Invalid seller address");
+
+        uint256 ethToTransfer = escrowedETH[_buyOrderId];
+        address buyer         = escrowOwner[_buyOrderId];
+
+        // Mark both orders as settled before transfer (checks-effects-interactions pattern)
+        settledOrders[_buyOrderId]  = true;
+        settledOrders[_sellOrderId] = true;
+        escrowedETH[_buyOrderId]    = 0;
+
+        // Transfer the escrowed ETH to the seller
+        (bool sent, ) = _seller.call{value: ethToTransfer}("");
+        require(sent, "AetherTrade: ETH transfer to seller failed");
+
+        emit LimitOrderSettled(
+            _buyOrderId,
+            _sellOrderId,
+            buyer,
+            _seller,
+            _asset,
+            ethToTransfer,
+            block.timestamp
+        );
+    }
+
+    /**
+     * @dev Cancel a limit order and automatically refund the escrowed ETH to the original buyer.
+     *      Can be called by the buyer themselves OR by the exchange owner (admin cancel).
+     *
+     * @param _orderId   The limit order ID to cancel
+     */
+    function cancelLimitOrder(uint256 _orderId) external {
+        require(escrowedETH[_orderId] > 0,    "AetherTrade: No ETH escrowed for this order");
+        require(!settledOrders[_orderId],      "AetherTrade: Order already settled, cannot cancel");
+
+        // Only the original buyer OR the exchange owner can cancel
+        require(
+            msg.sender == escrowOwner[_orderId] || msg.sender == owner,
+            "AetherTrade: Not authorized to cancel this order"
+        );
+
+        address payable refundTo  = payable(escrowOwner[_orderId]);
+        uint256 refundAmount      = escrowedETH[_orderId];
+
+        // Clear state before transfer (checks-effects-interactions pattern)
+        settledOrders[_orderId] = true;
+        escrowedETH[_orderId]   = 0;
+
+        // Refund ETH back to the original buyer
+        (bool sent, ) = refundTo.call{value: refundAmount}("");
+        require(sent, "AetherTrade: ETH refund failed");
+
+        emit LimitOrderCancelled(_orderId, refundTo, refundAmount, block.timestamp);
+    }
+
+    // ─── Admin ────────────────────────────────────────────────────────────────
+
+    /**
+     * @dev Update the exchange wallet address (only owner).
+     */
+    function setExchange(address _newExchange) external onlyOwner {
+        require(_newExchange != address(0), "AetherTrade: Invalid address");
+        exchange = _newExchange;
+    }
+
+    /**
+     * @dev Emergency drain — only owner can pull ETH not locked in escrow.
+     *      This only drains free-floating ETH, NOT escrowed funds.
+     */
+    function drain() external onlyOwner {
+        (bool sent, ) = payable(owner).call{value: address(this).balance}("");
+        require(sent, "AetherTrade: Drain failed");
+    }
+
+    // Allow contract to receive ETH directly (for releaseFunds top-ups)
+    receive() external payable {}
+}
